@@ -1,1 +1,3 @@
-# saas-plat-clientfx
+# expression
+
+表达式引擎, 把一个字符串在运行环境中执行成语句
