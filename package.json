@@ -5,11 +5,10 @@
   "productName": "saas-plat",
   "main": "dist/index.js",
   "scripts": {
-    "build": "gulp build",
+    "build": "rm -rf dist && babel src --out-dir dist",
     "antlr": "antlr4 -Dlanguage=JavaScript ./src/Expr.g4 -o ./src",
     "watch": "set DEBUG=saas-plat-expression:*,-not_this &&  mocha --watch",
-    "pub": "gulp publish",
-    "test": "mocha "
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
