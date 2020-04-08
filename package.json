@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@saas-plat.com:saas-plat-expression"
+    "url": "git@github.com:saas-plat/expression.git"
   },
   "keywords": [
     "expression"
