@@ -1,6 +1,5 @@
 {
-    "plugins": ["react"],
-    "extends": ["eslint:recommended", "plugin:react/recommended"],
+    "extends": ["eslint:recommended"],
     "parser": "babel-eslint",
     "env": {
       "browser": true,
@@ -9,15 +8,10 @@
       "es6": true
     },
     "parserOptions": {
-      "ecmaVersion": 7,
-      "ecmaFeatures": {
-        "jsx": true
-      }
+      "ecmaVersion": 7
     },
     "globals": {
       "Promise": true,
-      "__DEV__": true,
-      "__VERSION__": true,
       "expect": true,
       "describe": true,
       "it": true,
@@ -25,7 +19,5 @@
       "test": true
     },
     "rules":{
-      "react/display-name": "off",
-      "no-console": "off"
     }
 }
