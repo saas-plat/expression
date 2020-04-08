@@ -1,9 +1,10 @@
-const path = require('path');
+const {
+  series
+} = require('gulp');
 const fs = require('fs');
 const child_process = require("child_process");
 const exec = require('child_process').exec;
 const gulp = require('gulp');
-const runSequence = require('run-sequence');
 const gitane = require('gitane');
 const babel = require('gulp-babel');
 const sourcemaps = require('gulp-sourcemaps');
@@ -21,7 +22,7 @@ const email = process.env.NPM_EMAIL;
 
 const output = process.env.COPYTO || 'dist';
 
-gulp.task('get_project', (cb) => {
+const get_project = (cb) => {
   fs.readFile(process.cwd() + '/package.json', (err, txt) => {
     if (err) {
       return cb(err);
@@ -29,12 +30,12 @@ gulp.task('get_project', (cb) => {
     packjson = JSON.parse(txt);
     cb();
   });
-});
+}
 
-gulp.task('npm_version', (cb) => {
+const npm_version = (cb) => {
   exec('npm view ' + packjson.name + ' version ' + (registry ? '--registry ' + registry : ''), {
     cwd: process.cwd()
-  }, function (err, stdout, stderr) {
+  }, function (err, stdout) {
     if (!err) {
       const vs = stdout.split('.');
       vs[2] = parseInt(vs[2]) + 1;
@@ -47,16 +48,16 @@ gulp.task('npm_version', (cb) => {
     }
     cb(err);
   });
-});
+}
 
-gulp.task('update_version', (cb) => {
+const update_version = (cb) => {
   packjson.version = version;
   fs.writeFile(process.cwd() + '/package.json', JSON.stringify(packjson, null, 2), (err) => {
     cb(err);
   });
-});
+}
 
-gulp.task('npm_login', (cb) => {
+const npm_login = (cb) => {
 
   if (!username) {
     return cb();
@@ -88,41 +89,41 @@ gulp.task('npm_login', (cb) => {
       cb();
     }
   });
-});
+}
 
-gulp.task('npm_publish', (cb) => {
+const npm_publish = (cb) => {
   console.log('publish version:', version);
   exec('npm publish --registry ' + registry, {
     cwd: process.cwd()
-  }, function (err, stdout, stderr) {
+  }, function (err) {
     cb(err);
   });
-});
+}
 
-gulp.task('create_tag', (cb) => {
+const create_tag = (cb) => {
   exec('git tag -a ' + tag + ' -m "publish package"', {
     cwd: process.cwd()
-  }, function (err, stdout, stderr) {
+  }, function (err) {
     cb(err);
   });
-});
+}
 
-gulp.task('push_tag', (cb) => {
+const push_tag = (cb) => {
   if (!privKey) {
     exec('git push origin ' + tag, {
       cwd: process.cwd()
-    }, function (err, stdout, stderr) {
+    }, function (err) {
       cb(err);
     });
   } else {
     gitane.run(process.cwd(), privKey, 'git push origin ' + tag,
-      function (err, stdout, stderr, exitCode) {
+      function (err) {
         return cb(err);
       });
   }
-});
+}
 
-gulp.task('build', () =>
+const build = () =>
   gulp.src('src/**/*.js')
   .pipe(sourcemaps.init())
   .pipe(babel())
@@ -131,23 +132,20 @@ gulp.task('build', () =>
     this.end();
   })
   .pipe(sourcemaps.write('.'))
-  .pipe(gulp.dest(output))
-);
+  .pipe(gulp.dest(output));
+  
+exports.build = build;
 
-gulp.task('copy', () =>
+exports.copy = () =>
   gulp.src('src/**/*.js')
-    .pipe(gulp.dest(output))
-);
+  .pipe(gulp.dest(output));
 
-gulp.task('publish', (cb) =>
-  runSequence(
-    'get_project',
-    'npm_version',
-    'build',
-    'update_version',
-    'create_tag',
-    'npm_login',
-    'push_tag', // 确保tag提交成功后发布
-    'npm_publish',
-    cb)
-);
+exports.publish = series(
+  get_project,
+  npm_version,
+  build,
+  update_version,
+  create_tag,
+  npm_login,
+  push_tag, // 确保tag提交成功后发布
+  npm_publish)
