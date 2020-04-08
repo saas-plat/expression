@@ -30,8 +30,7 @@ node_modules/
 output/
 output.tar.gz
 
-/dev
-/saas-plat-win32-x64
 /src
 /test
 /.*
+/gulpfile.js
