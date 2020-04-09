@@ -1,6 +1,6 @@
 {
   "name": "@saas-plat/expression",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "expression",
   "productName": "saas-plat",
   "main": "dist/index.js",
